@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="google-signin-scope" content="profile email">
+    <meta name="google-signin-client_id" content="226120723625-8f5gjd2ba6lv25ti85l7v98oat8tlurn.apps.googleusercontent.com">
+    <title>Document</title>
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+    />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/showdown/1.9.0/showdown.min.js"
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+
+    <link rel="stylesheet" href="static/style.css" />
+    <link rel="stylesheet" href="static/fonts/css/all.css" />
+  </head>
+  <body>
+    <nav class="navbar-custom">
+      <!-- <a class="navbar-brand" href="#">Logo</a> -->
+      <i class="fas fa-bars" id="fas-maximized"></i>
+      <div class='avatar'></div>
+      <div class="g-signin2" data-onsuccess="onSignIn" data-theme="dark"></div>
+      <a href="#" onclick="signOut();" id="signOutButton">Sign out</a>
+    </nav>
+    <div class="grid-container">
+      <nav class="navbar-minimized">
+        <!-- <a class="navbar-brand" href="#">Logo</a> -->
+        <i class="fas fa-bars" id="fas-minimized"></i>
+      </nav>
+
+      <div class="form-group" id="title">
+        <input
+          name="title"
+          id="title_input"
+          type="text"
+          class="form-control"
+          placeholder="Title"
+        />
+      </div>
+
+      <div id="one" class="form-group h-100">
+        <textarea class="form-control h-100" id="comment"></textarea>
+      </div>
+
+      <div id="two"></div>
+    </div>
+    <script src="/static/app.js" async defer>
+      
+    </script>
+    
+  </body>
+</html>

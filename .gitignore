@@ -1,0 +1,7 @@
+.creds
+*.pyc
+
+.vscode/
+myvenv/
+backup/
+static/
