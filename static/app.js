@@ -32,19 +32,18 @@ $(document).keydown(function (event) {
     // console.log("save has been called");
     $.ajax({
       method: "POST",
-      url: "/v1/api/scratch/blog",
+      url: "/v1/api/scratch/blogs",
       data: JSON.stringify({
         content: $("#comment").val(),
         title: $("#title_input").val(),
-        uid: 'uid' in window ? window.uid : null,
-        cid: 'cid' in window ? window.cid : null
+        cid: "cid" in window ? window.cid : null,
       }),
       contentType: "application/json",
       success: (data) => {
         window.cid = data.cid;
         window.last_updated = data.last_updated;
       },
-      error : (data) => {
+      error: (data) => {
         alert(data.responseJSON.message);
       },
       dataType: "json",
@@ -53,53 +52,87 @@ $(document).keydown(function (event) {
   }
 });
 
-function signOut() {
-  var auth2 = gapi.auth2.getAuthInstance();
-  auth2.signOut().then(function () {
-    console.log("User signed out.");
+function get_all_blogs() {
+  const formatter = new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
   });
-  delete window.uid;
-  delete window.cid;
-  $('#signOutButton').hide();
-  $('.avatar img').remove();
-}
-
-function onSignIn(googleUser) {
-  // Useful data for your client-side scripts:
-  var profile = googleUser.getBasicProfile();
-  console.log("ID: " + profile.getId()); // Don't send this directly to your server!
-  window.uid = profile.getId();
-  console.log("Full Name: " + profile.getName());
-  console.log("Given Name: " + profile.getGivenName());
-  console.log("Family Name: " + profile.getFamilyName());
-  console.log("Image URL: " + profile.getImageUrl());
-  console.log("Email: " + profile.getEmail());
-  img = new Image();
-  img.src = profile.getImageUrl();
-  $('.avatar').append(img);
-  // The ID token you need to pass to your backend:
-  var id_token = googleUser.getAuthResponse().id_token;
-  console.log("ID Token: " + id_token);
-
+  navbar = $(".navbar-custom");
   $.ajax({
-    method: "POST",
-    url: "/tokensignin",
-    data: JSON.stringify({
-      idtoken: id_token
-    }),
-    contentType: "application/json",
+    method: "GET",
+    url: "/v1/api/scratch/blogs",
     success: (data) => {
-      console.log("Signed in as: " + data);
+      $(".past-blog").remove();
+      $(data).each(function (key, item) {
+        // console.log(item);
+        try {
+          date = formatter.format(Date.parse(item.last_updated));
+        } catch {
+          console.log(item.last_updated);
+          date = "";
+        }
+        navbar.append(
+          '<div class="past-blog">' +
+            '<h5 data-cid="' +
+            item.cid +
+            '">' +
+            item.title +
+            '</h5><p><span class="time">' +
+            date +
+            "</span></p></div>"
+        );
+      });
     },
-    dataType: "json",
   });
-
-  $('#signOutButton').show();
 }
 
-function isUserSignedIn() {
-    gapi.load('auth2', function() {
-        var isSignedIn = auth2.isSignedIn.get();
-        console.log('is signed in? ', isSignedIn)
-    })
+$(document).ready(function () {
+  get_all_blogs();
+});
+
+function clear() {
+  delete window.cid;
+  // console.log("add new was called");
+  $("#comment").val("");
+  $("#title_input").val("");
+  $("#two").html("");
+}
+
+$("#add-new").click(clear);
+
+$("#delete-modal button").click(function (event) {
+  if ("accept" in $(event.target).data()) {
+    console.log("accept");
+    $.ajax({
+      method: "DELETE",
+      url: "/v1/api/scratch/blogs/" + window.cid,
+      success: (data) => {
+        console.log(data);
+        $(".navbar-minimized").show();
+        $(".navbar-custom").hide();
+        clear();
+        get_all_blogs();
+      },
+    });
+  } else {
+    console.log("dismiss");
   }
+});
+
+// $(".past-blog h5").click(function () {
+//   console.log("wah");
+// });
+
+$(document).on("click", ".past-blog h5", function (event) {
+  $.ajax({
+    method: "GET",
+    url: "/v1/api/scratch/blogs/" + $(event.target).data().cid,
+    success: (data) => {
+      $("#comment").val(data.content);
+      $("#title_input").val(data.title);
+      window.cid = data.cid;
+      $(".navbar-minimized").show();
+      $(".navbar-custom").hide();
+    },
+  });
+});
