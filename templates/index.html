@@ -19,60 +19,11 @@
     ></script>
   </head>
   <body>
-    <nav class="navbar-custom">
-      <!-- <a class="navbar-brand" href="#">Logo</a> -->
-      <div class="top-navbar">
-        {% if current_user.is_authenticated %}
-        <!-- <i class="fas fa-bars" id="fas-maximized"></i> -->
-        <div class="avatar-container">
-          <img
-            src="{{ profile_pic }}"
-            alt="Google profile pic"
-            class="avatar rounded-circle"
-            height="100px"
-            width="100px"
-          />
-          <a
-            class="btn btn-lg btn-google text-uppercase"
-            type="submit"
-            href="/logout"
-            id="signOutButton"
-            >Logout</a
-          >
-        </div>
-        {% else %}
-        <!-- <i class="fas fa-bars" id="fas-maximized"></i> -->
-        <a
-          class="btn btn-lg btn-google text-uppercase"
-          type="submit"
-          href="/login"
-          ><i class="fab fa-google mr-2"></i> Sign in with Google</a
-        >
-        <!-- <a class="button" href="/login">Google Login</a> -->
-        {% endif %}
-      </div>
-      <!-- <div class="past-blog">
-        <h5></h5>
-        <p>
-          <span class="time"></span>
-        </p>
-      </div> -->
-      <!-- <template>
-        <div class="past-blog">
-          <h5></h5>
-          <p><span class="time"></span></p>
-        </div>
-      </template> -->
-
-      <!-- <div onclick="/login" data-theme="dark"></div> -->
-
-      <!-- <a href="#" onclick="signOut();" id="signOutButton">Sign out</a> -->
-    </nav>
     <div class="grid-container">
-      <nav class="navbar-minimized">
-        <!-- <a class="navbar-brand" href="#">Logo</a> -->
+      <!-- <nav class="navbar-minimized">
+        <a class="navbar-brand" href="#">Logo</a>
         <i class="fas fa-bars" id="fas-minimized"></i>
-      </nav>
+      </nav> -->
 
       <div class="form-group" id="title">
         <input
@@ -89,16 +40,49 @@
       </div>
 
       <div id="two"></div>
+      <div id="status-bar" class="border d-flex">
+        <span id="word-count" class="mr-auto">word count : <span>0</span></span>
+        <span
+          class="badge badge-pill badge-primary p-1 pl-2 pr-2 mr-1"
+          id="doc-status"
+          >New</span
+        >
+      </div>
     </div>
+    <!-- -------------------------------------------------------------- -->
+    <!-- ----------------      Free section     ----------------------- -->
+    <!-- -------------------------------------------------------------- -->
 
     <div id="quick-actions" class="position-absolute">
+      {% if current_user.is_authenticated %}
+      <a
+        class="btn btn-light rounded-circle"
+        type="submit"
+        href="/logout"
+        id="signOutButton"
+        ><i
+          class="fas fa-sign-out-alt mx-auto"
+          id="fas-minimized"
+          style="margin-top: 8px;"
+        ></i
+      ></a>
+      {% else %}
+      <!-- <i class="fas fa-bars" id="fas-maximized"></i> -->
+      <a class="btn btn-light rounded-circle" type="submit" href="/login"
+        ><i class="fab fa-google mx-auto" style="margin-top: 8px;"></i
+      ></a>
+      <!-- <a class="button" href="/login">Google Login</a> -->
+      {% endif %}
       <button
         type="button"
         class="btn btn-light rounded-circle"
-        id="delete"
+        id="list-blogs"
         data-toggle="modal"
-        data-target="#delete-modal"
+        data-target="#list-blogs-modal"
       >
+        <i class="fas fa-bars" id="fas-minimized"></i>
+      </button>
+      <button type="button" class="btn btn-light rounded-circle" id="delete">
         <i class="fa fa-trash" aria-hidden="true"></i>
       </button>
       <button type="button" class="btn btn-light rounded-circle" id="add-new">
@@ -135,6 +119,79 @@
               data-dismiss="modal"
             >
               Yes
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal" id="new-modal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <!-- Modal Header -->
+          <div class="modal-header">
+            <h4 class="modal-title">Confirmation</h4>
+            <button type="button" class="close" data-dismiss="modal">
+              &times;
+            </button>
+          </div>
+
+          <!-- Modal body -->
+          <div class="modal-body">
+            You haven't saved your data. Are you sure you want to create new
+            page? <br />
+            This action is not undoable.
+          </div>
+
+          <!-- Modal footer -->
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" data-dismiss="modal">
+              No
+            </button>
+            <button
+              type="button"
+              class="btn btn-danger"
+              data-accept="modal"
+              data-dismiss="modal"
+            >
+              Yes
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal" id="list-blogs-modal">
+      <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+          <!-- Modal Header -->
+          <div class="modal-header mx-auto">
+            <!-- <h4 class="modal-title">History</h4> -->
+            {% if current_user.is_authenticated %}
+            <!-- <i class="fas fa-bars" id="fas-maximized"></i> -->
+            <div class="avatar-container">
+              <img
+                src="{{ profile_pic }}"
+                alt="Google profile pic"
+                class="avatar rounded-circle"
+                height="100px"
+                width="100px"
+              />
+            </div>
+            {% endif %}
+
+            <!-- <button type="button" class="close" data-dismiss="modal"> -->
+          </div>
+
+          <!-- Modal body -->
+          <div class="modal-body">
+            <ul class="list-group list-group-flush"></ul>
+          </div>
+
+          <!-- Modal footer -->
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" data-dismiss="modal">
+              Cancel
             </button>
           </div>
         </div>
