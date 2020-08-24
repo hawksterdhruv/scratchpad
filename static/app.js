@@ -1,6 +1,11 @@
 var converter = new showdown.Converter();
-const docStatus = $("#doc-status");
-// window.saved = true;
+const docStatus = $("#doc-status"),
+  title_input = $("#title_input"),
+  textarea = $("#comment"),
+  output_area = $("#two"),
+  past_blog = $(".past-blog"),
+  new_modal = $("#new-modal"),
+  add_new = $("#add-new");
 
 let binder = {
   set: function (obj, prop, value) {
@@ -35,17 +40,17 @@ function wordCount(data) {
     .filter((item) => item).length;
 }
 
-$("textarea").on("input", function (event) {
+textarea.on("input", function (event) {
   // console.log(event.shiftKey, event.ctrlKey, event.altKey, event.which);
   // console.log(event);
   // if (!event.ctrlKey || (event.shiftKey && event.which == 16) || event.altKey) {
   html = converter.makeHtml($(this).val());
-  $("#two").html(html);
+  output_area.html(html);
   $("#word-count>span").html(wordCount($(this).val()));
   saved["current"] = false;
 });
 
-$("#title_input").on("input", () => (saved["current"] = false));
+title_input.on("input", () => (saved["current"] = false));
 
 //Save function
 $(document).keydown(function (event) {
@@ -55,16 +60,13 @@ $(document).keydown(function (event) {
     // Save Function
     event.preventDefault();
     // console.log("save has been called");
-    if (
-      $("#title_input").val().trim() !== "" ||
-      $("#comment").val().trim() !== ""
-    ) {
+    if (title_input.val().trim() !== "" || textarea.val().trim() !== "") {
       $.ajax({
         method: "POST",
         url: "/v1/api/scratch/blogs",
         data: JSON.stringify({
-          content: $("#comment").val(),
-          title: $("#title_input").val(),
+          content: textarea.val(),
+          title: title_input.val(),
           cid: "cid" in window ? window.cid : null,
         }),
         contentType: "application/json",
@@ -94,7 +96,7 @@ function get_all_blogs() {
     method: "GET",
     url: "/v1/api/scratch/blogs",
     success: (data) => {
-      $(".past-blog").remove();
+      past_blog.remove();
       $(data).each(function (key, item) {
         // console.log(item);
         try {
@@ -124,17 +126,16 @@ $(document).ready(function () {
 
 function clear() {
   delete window.cid;
-  // console.log("add new was called");
-  $("#comment").val("");
-  $("#title_input").val("");
-  $("#two").html("");
+  textarea.val("");
+  title_input.val("");
+  output_area.html("");
   saved["current"] = true;
   $("#word-count>span").html(wordCount($(this).val()));
 }
 
-$("#add-new").click(function () {
+add_new.click(function () {
   if (!saved["current"]) {
-    $("#new-modal").modal({ show: true });
+    new_modal.modal({ show: true });
   } else {
     clear();
   }
@@ -144,14 +145,14 @@ $("#new-modal button").click(function () {
   if ("accept" in $(event.target).data()) {
     clear();
   }
-  $("#new-modal").modal({ show: false });
+  new_modal.modal({ show: false });
 });
 
 $("#delete").click(() => {
   if (
     window.cid ||
-    $("#title_input").val().trim() !== "" ||
-    $("#comment").val().trim() !== ""
+    title_input.val().trim() !== "" ||
+    textarea.val().trim() !== ""
   ) {
     $("#delete-modal").modal({ show: true });
   }
@@ -165,8 +166,6 @@ $("#delete-modal button").click(function (event) {
       url: "/v1/api/scratch/blogs/" + window.cid,
       success: (data) => {
         console.log(data);
-        // $(".navbar-minimized").show();
-        // $(".navbar-custom").hide();
         clear();
         get_all_blogs();
       },
@@ -184,8 +183,8 @@ $(document).on("click", ".past-blog", function (event) {
     url: "/v1/api/scratch/blogs/" + $(event.target).data().cid,
     success: (data) => {
       // console.log(data);
-      $("#comment").val(data.content).trigger("input");
-      $("#title_input").val(data.title);
+      textarea.val(data.content).trigger("input");
+      title_input.val(data.title);
       window.cid = data.cid;
       saved["current"] = true;
     },
